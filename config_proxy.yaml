@@ -1,0 +1,71 @@
+# Magentic-UI Configuration with Custom LLM Proxy
+# Sử dụng proxy server để chuyển đổi từ OpenAI API sang Custom LLM API của bạn
+
+# =============================================================
+# CUSTOM LLM qua Proxy Server
+# Proxy chạy tại http://localhost:8090/v1
+# Chuyển đổi sang Custom LLM API tại http://localhost:8080/chat
+# =============================================================
+custom_llm: &custom_llm
+  provider: OpenAIChatCompletionClient
+  config:
+    model: copilot/gpt-4o
+    api_key: "not-needed-for-proxy"
+    base_url: "http://127.0.0.1:8090/v1"
+    max_retries: 3
+    model_info:
+      vision: true
+      function_calling: true
+      json_output: true
+      family: "unknown"
+      structured_output: false
+      multiple_system_messages: false
+
+# =============================================================
+# FARA-7B cho Web Surfer (Computer Use Agent)
+# Tùy chọn - có thể dùng Custom LLM thay thế
+# =============================================================
+fara_client: &fara_client
+  provider: OpenAIChatCompletionClient
+  config:
+    model: Fara-7B
+    api_key: "not-needed"
+    base_url: "http://localhost:8000/v1"
+    max_retries: 10
+    model_info:
+      vision: true
+      function_calling: true
+      json_output: true
+      family: "unknown"
+      structured_output: false
+      multiple_system_messages: false
+
+# =============================================================
+# Client Assignments
+# =============================================================
+
+# Orchestrator: Điều phối - dùng Custom LLM qua Proxy
+orchestrator_client: *custom_llm
+
+# Coder: Viết code - dùng Custom LLM qua Proxy  
+coder_client: *custom_llm
+
+# Web Surfer: Browse web - dùng Custom LLM (hoặc FARA-7B nếu có)
+web_surfer_client: *custom_llm
+
+# File Surfer: Xem files - dùng Custom LLM qua Proxy
+file_surfer_client: *custom_llm
+
+# Action Guard: Safety checks - dùng Custom LLM qua Proxy
+action_guard_client: *custom_llm
+
+# Plan Learning: Học từ interactions - dùng Custom LLM qua Proxy
+plan_learning_client: *custom_llm
+
+# =============================================================
+# Settings - Tắt human-in-the-loop để auto-approve
+# =============================================================
+# Uncomment để bật các tính năng
+# approve_plan: false          # Tự động approve plan
+# approve_action: false        # Tự động approve actions
+# human_input_timeout: 300     # Timeout sau 5 phút

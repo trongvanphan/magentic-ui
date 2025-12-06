@@ -1,0 +1,61 @@
+# Magentic-UI Configuration with Custom LLM Provider
+# Uses your local LLM API at http://localhost:8080/chat
+
+# =============================================================
+# CUSTOM LLM CLIENT - Your Local API
+# =============================================================
+custom_llm: &custom_llm
+  provider: magentic_ui.custom_llm_client.CustomLLMChatCompletionClient
+  config:
+    base_url: "http://localhost:8080"
+    api_key: "localApiToken"
+    model: "copilot/gpt-4o"
+    timeout: 120
+    model_info:
+      vision: true
+      function_calling: true
+      json_output: true
+      family: "unknown"
+      structured_output: false
+      multiple_system_messages: false
+
+# =============================================================
+# FARA-7B cho Web Surfer (Computer Use Agent)
+# =============================================================
+fara_client: &fara_client
+  provider: OpenAIChatCompletionClient
+  config:
+    model: Fara-7B
+    api_key: "not-needed"
+    base_url: "http://localhost:8000/v1"
+    max_retries: 10
+    model_info:
+      vision: true
+      function_calling: true
+      json_output: true
+      family: "unknown"
+      structured_output: false
+      multiple_system_messages: false
+  max_retries: 10
+
+# =============================================================
+# Client Assignments
+# =============================================================
+
+# Orchestrator: Điều phối - dùng Custom LLM
+orchestrator_client: *custom_llm
+
+# Coder: Viết code - dùng Custom LLM
+coder_client: *custom_llm
+
+# Web Surfer: Browse web - dùng FARA-7B
+web_surfer_client: *fara_client
+
+# File Surfer: Xem files - dùng Custom LLM
+file_surfer_client: *custom_llm
+
+# Action Guard: Safety checks - dùng Custom LLM
+action_guard_client: *custom_llm
+
+# Plan Learning: Học từ interactions - dùng Custom LLM
+plan_learning_client: *custom_llm
